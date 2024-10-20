@@ -3,7 +3,7 @@ from konlpy.tag import Okt
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread_formatting import * # 셀 꾸미는 모듈
-from googleapiclient.discovery import build
+from googleapiclient.discovery import build # 폴더 이미지를 끌어오는 코드
 
 # '롯대 전주점' 이렇게 쓰게해서, '점'을 붙일 것인가.. '점'을 꼭 써줘야 하나,,
 # 자격 증명 파일 경로
@@ -88,38 +88,49 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                     result = j[:len(j)-2]
                     if ":" not in result:
                         jumun = result # 주문
+                        print(jumun)
                         pos_tag = okt.pos(jumun)
                         filt_pos= [word for word, pos in pos_tag if pos in ["Noun"]]
                         if "전주" in filt_pos:
-                            majum = "전주점"
-                            print("매점은", majum)
-                            sheet.update_cell(105+count_jumun_2, 6,majum) # 105는 내가 수동으로 바꿔야하는 행이다.
+                            majun = "전주점"
+                            print("매점은", majun)
+                            sheet.update_cell(105+count_jumun_2, 6,majun) # 105는 내가 수동으로 바꿔야하는 행이다.
                             a = str(105+count_jumun_2)
                             format_cell_range(sheet, ('F'+a),fmt_전주점)
                         elif "김해" in filt_pos:
-                            majum = "김해점"
-                            print("매점은", majum)
-                            sheet.update_cell(105+count_jumun_2, 5,majum)
+                            majun = "김해점"
+                            print("매점은", majun)
+                            sheet.update_cell(105+count_jumun_2, 5,majun)
                             b = str(105+count_jumun_2)
                             format_cell_range(sheet, ('E'+b),fmt_김해점)
                         elif "창원" in filt_pos:
-                            majum = "창원점"
-                            print("매점은", majum)
-                            sheet.update_cell(105+count_jumun_2, 4,majum)
+                            majun = "창원점"
+                            print("매점은", majun)
+                            sheet.update_cell(105+count_jumun_2, 4,majun)
                             c = str(105+count_jumun_2)
                             format_cell_range(sheet, ('D'+c),fmt_창원점)
                         elif "잠실" in filt_pos:
-                            majum = "잠실점"
-                            print("매점은", majum)
-                            sheet.update_cell(105+count_jumun_2, 3,majum)
+                            majun = "잠실점"
+                            print("매점은", majun)
+                            sheet.update_cell(105+count_jumun_2, 3,majun)
                             d = str(105+count_jumun_2)
                             format_cell_range(sheet, ('C'+d),fmt_잠실점)
                         else :
-                            majum = "기타"
-                            print("매점은", majum)
-                            sheet.update_cell(105+count_jumun_2, 7,majum)
-                            e = str(105+count_jumun_2)
-                            format_cell_range(sheet, ('G'+e),fmt_기타)
+                            a = re.findall(r'\(([^)]*)\)', jumun)
+                            b = a[0].split(" ")
+                            majun = ""
+                            try:
+                                b[1]
+                            except:
+                                majun = b[0]
+                                
+                            else:
+                                for i in range(len(b)):
+                                    majun += b[i]
+                                print("매점은", majun)
+                                sheet.update_cell(105+count_jumun_2, 7,majun)
+                                e = str(105+count_jumun_2)
+                                format_cell_range(sheet, ('G'+e),fmt_기타)
                     elif ":" in result:
                     #print(result) # result[len(result)-1]에는 옵션이 들어가 있다.
                        bunli = result.split(":") # 날짜:5월 25일 ... 이런식으로 ": "를 ":"로 바꿔줘야한다 !
@@ -162,34 +173,46 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                         pos_tag = okt.pos(asjun)
                         filt_pos= [word for word, pos in pos_tag if pos in ["Noun"]]
                         if "전주" in filt_pos:
-                            majum = "전주점"
-                            print("매점은", majum)
-                            sheet.update_cell(95+count_asjun_2, 6,majum) # 95는 내가 수동으로 바꿔야하는 행이다.
+                            majun = "전주점"
+                            print("매점은", majun)
+                            sheet.update_cell(95+count_asjun_2, 6,majun) # 95는 내가 수동으로 바꿔야하는 행이다.
                             a = str(95+count_asjun_2)
                             format_cell_range(sheet, ('F'+a),fmt_전주점)
                         elif "김해" in filt_pos:
-                            majum = "김해점"
-                            print("매점은", majum)
-                            sheet.update_cell(95+count_asjun_2, 5,majum) 
+                            majun = "김해점"
+                            print("매점은", majun)
+                            sheet.update_cell(95+count_asjun_2, 5,majun) 
                             b = str(95+count_asjun_2)
                             format_cell_range(sheet, ('E'+b),fmt_김해점)
                         elif "창원" in filt_pos:
-                            majum = "창원점"
-                            print("매점은", majum)
-                            sheet.update_cell(95+count_asjun_2, 4,majum)
+                            majun = "창원점"
+                            print("매점은", majun)
+                            sheet.update_cell(95+count_asjun_2, 4,majun)
                             c = str(95+count_asjun_2)
                             format_cell_range(sheet, ('D'+c),fmt_창원점)
                         elif "잠실" in filt_pos:
-                            majum = "잠실점"
-                            print("매점은", majum)
-                            sheet.update_cell(95+count_asjun_2, 3,majum)
+                            majun = "잠실점"
+                            print("매점은", majun)
+                            sheet.update_cell(95+count_asjun_2, 3,majun)
                             d = str(95+count_asjun_2)
                             format_cell_range(sheet, ('C'+d),fmt_잠실점)
                         else :
-                            majum = "기타"
-                            print("매점은", majum)
-                            sheet.update_cell(95+count_asjun_2, 7,majum)
-                            e = str(95+count_asjun_2)
+                            a = re.findall(r'\(([^)]*)\)', asjun)
+                            print(asjun)
+                            b = a[0].split(" ")
+                            majun = ""
+                            try:
+                                b[1]
+                            except:
+                                majun = b[0]
+                                print(majun)
+                            else:
+                                for i in range(len(b)):
+                                    majun += b[i]
+                                    print(majun)
+                            print("매점은", majun)
+                            sheet.update_cell(95+count_jumun_2, 7,majun)
+                            e = str(95+count_jumun_2)
                             format_cell_range(sheet, ('G'+e),fmt_기타)
                     elif ":" in result:
                        bunli = result.split(":") 
@@ -209,6 +232,7 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                 index_asjun += 1                    
 
 
-
+'''
 items = results.get('files', [])
 print(items, index_asjun, index_jumun,index_common)
+'''
