@@ -23,16 +23,15 @@ spreadsheet_id = '1FJ-NYU-Hf9Ig4KgmKpPMy50TKYpwPSFtBoG6SIh8PH0'
 spreadsheet = client.open_by_key(spreadsheet_id)
 drive_service = build('drive', 'v3', credentials=credentials)
 
-data_1 = "전주\n김해\n잠실\n창원\n롯대" # '점'을 붙이면 안된다.. 그냥 롯대잠실, 신세계김해 이런식으로
+data_1 = "전주/n김해/n잠실/n창원/n롯대" # '점'을 붙이면 안된다.. 그냥 롯대잠실, 신세계김해 이런식으로
 okt = Okt()
 
 index_common = 0
 index_jumun = 0
 index_asjun = 0
 count_jumun_1 = 0
-count_jumun_2 = 0
-count_asjun_1 = 0
-count_asjun_2 = 0
+count_jumun_2 = -1
+count_asjun_2 = -1
 
 folder_id = '1CSjt_1nRMZrguO_06RVs4zeBQRt4l8yp'
 query = f"'{folder_id}' in parents and (mimeType='image/jpeg' or mimeType='image/png')"
@@ -66,7 +65,7 @@ fmt_기타 = CellFormat(
     textFormat=TextFormat(bold=True)
 )
 
-with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", "r", encoding="UTF-8") as f:
+with open("C:/Users/djdjd/OneDrive/바탕 화면/KakaoTalk_20241030_2119_56_414_오세현.txt", "r", encoding="UTF-8") as f:
     text = f.read().replace("\n", " ")
     result = re.findall(r'\{([^}]*)\}', text)
     print(result)
@@ -75,6 +74,17 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
         # 주문건
         if "주문건" in i_lower:
             sheet = spreadsheet.get_worksheet(0)
+            data = sheet.get_all_values('C:S')
+
+            # 비어 있는 첫 번째 행 번호 찾기
+            def find_first_empty_row(data):
+                for i, row in enumerate(data):
+                    # 비어 있는 행을 찾으면 해당 행 번호 반환 (1-based index)
+                    if all(cell == '' for cell in row):
+                        return i + 1  # 인덱스는 0부터 시작하므로 +1
+                return len(data) + 1  # 모든 행이 차 있다면 다음 행 번호 반환
+
+            first_empty_row = find_first_empty_row(data)
             count_jumun_2 += 1
             count_jumun_1 = 0
             print("--주문건--")
@@ -82,7 +92,7 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
             option = i_lower[len(i_lower)-1] #옵션
             lst = option.split(":")
             real_option = lst[len(lst)-1]# 진짜 옵션 내용
-            sheet.update_cell(105+count_jumun_2,13,real_option)
+            sheet.update_cell(first_empty_row+count_jumun_2,13,real_option)
             for j in i_lower:
                 if j[len(j)-1] in ["1", "2", "3", "4", "5", "6", "7", "8"]:
                     result = j[:len(j)-2]
@@ -94,26 +104,26 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                         if "전주" in filt_pos:
                             majun = "전주점"
                             print("매점은", majun)
-                            sheet.update_cell(105+count_jumun_2, 6,majun) # 105는 내가 수동으로 바꿔야하는 행이다.
-                            a = str(105+count_jumun_2)
+                            sheet.update_cell(first_empty_row+count_jumun_2, 6,majun) # 105는 내가 수동으로 바꿔야하는 행이다.
+                            a = str(first_empty_row+count_jumun_2)
                             format_cell_range(sheet, ('F'+a),fmt_전주점)
                         elif "김해" in filt_pos:
                             majun = "김해점"
                             print("매점은", majun)
-                            sheet.update_cell(105+count_jumun_2, 5,majun)
-                            b = str(105+count_jumun_2)
+                            sheet.update_cell(first_empty_row+count_jumun_2, 5,majun)
+                            b = str(first_empty_row+count_jumun_2)
                             format_cell_range(sheet, ('E'+b),fmt_김해점)
                         elif "창원" in filt_pos:
                             majun = "창원점"
                             print("매점은", majun)
-                            sheet.update_cell(105+count_jumun_2, 4,majun)
-                            c = str(105+count_jumun_2)
+                            sheet.update_cell(first_empty_row+count_jumun_2, 4,majun)
+                            c = str(first_empty_row+count_jumun_2)
                             format_cell_range(sheet, ('D'+c),fmt_창원점)
                         elif "잠실" in filt_pos:
                             majun = "잠실점"
                             print("매점은", majun)
-                            sheet.update_cell(105+count_jumun_2, 3,majun)
-                            d = str(105+count_jumun_2)
+                            sheet.update_cell(first_empty_row+count_jumun_2, 3,majun)
+                            d = str(first_empty_row+count_jumun_2)
                             format_cell_range(sheet, ('C'+d),fmt_잠실점)
                         else :
                             a = re.findall(r'\(([^)]*)\)', jumun)
@@ -128,7 +138,7 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                                 for i in range(len(b)):
                                     majun += b[i]
                                 print("매점은", majun)
-                                sheet.update_cell(105+count_jumun_2, 7,majun)
+                                sheet.update_cell(first_empty_row+count_jumun_2, 7,majun)
                                 e = str(105+count_jumun_2)
                                 format_cell_range(sheet, ('G'+e),fmt_기타)
                     elif ":" in result:
@@ -141,14 +151,14 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                            fom = bunli[0]
                            nayoung = bunli[1]
                            print(nayoung)
-                           sheet.update_cell(105+count_jumun_2,8+count_jumun_1,nayoung)
+                           sheet.update_cell(first_empty_row+count_jumun_2,8+count_jumun_1,nayoung)
                            count_jumun_1 += 1
                 # 사진 넣는 코드(폴더에서 사진 하나씩)
             if index_common <= (len(items) - 1):
                 item = items[index_common]
                 image_url = f"https://drive.google.com/uc?id={item['id']}"
                 image_formula = f'=IMAGE("{image_url}")'
-                sheet.update_cell(106+ index_jumun, 14, image_formula) # 106번행 부터
+                sheet.update_cell(first_empty_row+ index_jumun, 14, image_formula) # 106번행 부터
                 index_common += 1
                 index_jumun += 1
             
@@ -157,14 +167,24 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
         # as건
         elif "as건" in i_lower:
             sheet = spreadsheet.get_worksheet(1)
-            count_asjun_2 += 1
-            count_asjun_1 = 0          
+            data = sheet.get_all_values('C:S')
+
+            # 비어 있는 첫 번째 행 번호 찾기
+            def find_first_empty_row(data):
+                for i, row in enumerate(data):
+                    # 비어 있는 행을 찾으면 해당 행 번호 반환 (1-based index)
+                    if all(cell == '' for cell in row):
+                        return i + 1  # 인덱스는 0부터 시작하므로 +1
+                return len(data) + 1  # 모든 행이 차 있다면 다음 행 번호 반환
+            first_empty_row = find_first_empty_row(data)
+            print(first_empty_row)
+            count_asjun_2 += 1          
             print("--as건--")
             i_lower = i_lower.split('. ')
             option = i_lower[len(i_lower)-1] #옵션
             lst = option.split(":")
             real_option = lst[len(lst)-1]# 진짜 옵션 내용
-            sheet.update_cell(95+count_jumun_2,13,real_option)
+            sheet.update_cell(first_empty_row+count_asjun_2,14,real_option)
             for j in i_lower:
                 if j[len(j)-1] in ["1", "2", "3", "4", "5", "6", "7", "8"]:
                     result = j[:len(j)-2]
@@ -175,26 +195,26 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                         if "전주" in filt_pos:
                             majun = "전주점"
                             print("매점은", majun)
-                            sheet.update_cell(95+count_asjun_2, 6,majun) # 95는 내가 수동으로 바꿔야하는 행이다.
-                            a = str(95+count_asjun_2)
+                            sheet.update_cell(first_empty_row+count_asjun_2, 6,majun) # 95는 내가 수동으로 바꿔야하는 행이다.
+                            a = str(first_empty_row+count_asjun_2)
                             format_cell_range(sheet, ('F'+a),fmt_전주점)
                         elif "김해" in filt_pos:
                             majun = "김해점"
                             print("매점은", majun)
-                            sheet.update_cell(95+count_asjun_2, 5,majun) 
-                            b = str(95+count_asjun_2)
+                            sheet.update_cell(first_empty_row+count_asjun_2, 5,majun) 
+                            b = str(first_empty_row+count_asjun_2)
                             format_cell_range(sheet, ('E'+b),fmt_김해점)
                         elif "창원" in filt_pos:
                             majun = "창원점"
                             print("매점은", majun)
-                            sheet.update_cell(95+count_asjun_2, 4,majun)
-                            c = str(95+count_asjun_2)
+                            sheet.update_cell(first_empty_row+count_asjun_2, 4,majun)
+                            c = str(first_empty_row+count_asjun_2)
                             format_cell_range(sheet, ('D'+c),fmt_창원점)
                         elif "잠실" in filt_pos:
                             majun = "잠실점"
                             print("매점은", majun)
-                            sheet.update_cell(95+count_asjun_2, 3,majun)
-                            d = str(95+count_asjun_2)
+                            sheet.update_cell(first_empty_row+count_asjun_2, 3,majun)
+                            d = str(first_empty_row+count_asjun_2)
                             format_cell_range(sheet, ('C'+d),fmt_잠실점)
                         else :
                             a = re.findall(r'\(([^)]*)\)', asjun)
@@ -211,27 +231,51 @@ with open("C:/Users/djdjd/OneDrive/바탕 화면/Python/python_kota/study.txt", 
                                     majun += b[i]
                                     print(majun)
                             print("매점은", majun)
-                            sheet.update_cell(95+count_jumun_2, 7,majun)
-                            e = str(95+count_jumun_2)
+                            sheet.update_cell(first_empty_row+count_asjun_2, 7,majun)
+                            e = str(first_empty_row+count_asjun_2)
                             format_cell_range(sheet, ('G'+e),fmt_기타)
                     elif ":" in result:
                        bunli = result.split(":") 
                        print(bunli)
                        fom = bunli[0]
                        nayoung = bunli[1]
-                       print(nayoung)
-                       sheet.update_cell(95+count_asjun_2,8+count_asjun_1,nayoung)
-                       count_asjun_1 += 1
+                       print(fom, nayoung)
+                       if fom == "날짜":
+                           sheet.update_cell(first_empty_row+count_asjun_2,8,nayoung)
+                       elif fom == "성함":
+                           sheet.update_cell(first_empty_row+count_asjun_2,10,nayoung)
+                       elif fom == "연락처":
+                           sheet.update_cell(first_empty_row+count_asjun_2,11,nayoung)
+                       elif fom == "수령방법":
+                           sheet.update_cell(first_empty_row+count_asjun_2,12,nayoung)
+                       elif fom == "상품명":
+                           sheet.update_cell(first_empty_row+count_asjun_2,13,nayoung,)
+                       elif fom == "구매일":
+                           sheet.update_cell(first_empty_row+count_asjun_2,18,nayoung)
 
             if index_common <= (len(items) - 1):
                 item = items[index_common]
                 image_url = f"https://drive.google.com/uc?id={item['id']}"
                 image_formula = f'=IMAGE("{image_url}")'
-                sheet.update_cell(96+ index_asjun, 14, image_formula) # 106번행 부터
+                sheet.update_cell(first_empty_row+ index_asjun, 15, image_formula) # 96번행 부터
                 index_common += 1
                 index_asjun += 1                    
 
 
+sheet = spreadsheet.get_worksheet(0)
+data = sheet.get_all_values('C:S')
+
+# 비어 있는 첫 번째 행 번호 찾기
+def find_first_empty_row(data):
+    for i, row in enumerate(data):
+        # 비어 있는 행을 찾으면 해당 행 번호 반환 (1-based index)
+        if all(cell == '' for cell in row):
+            return i + 1  # 인덱스는 0부터 시작하므로 +1
+    return len(data) + 1  # 모든 행이 차 있다면 다음 행 번호 반환
+
+first_empty_row = find_first_empty_row(data)
+
+print(f"비어 있는 첫 번째 행 번호: {first_empty_row}")
 '''
 items = results.get('files', [])
 print(items, index_asjun, index_jumun,index_common)
