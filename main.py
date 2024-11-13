@@ -4,7 +4,6 @@ import time
 from google.oauth2.service_account import Credentials
 from gspread_formatting import * # 셀 꾸미는 모듈
 from googleapiclient.discovery import build # 폴더 이미지를 끌어오는 코드
-from submain import rename_images_in_order, upload_images_to_drive
 
 # '롯대 전주점' 이렇게 쓰게해서, '점'을 붙일 것인가.. '점'을 꼭 써줘야 하나,,
 # 자격 증명 파일 경로
@@ -32,12 +31,6 @@ desktop_folder_path = "C:/Users/djdjd/OneDrive/바탕 화면/카카오톡다운�
 folder_id = '1CSjt_1nRMZrguO_06RVs4zeBQRt4l8yp'
 
 
-rename_images_in_order(desktop_folder_path)
-time.sleep(2)
-
-upload_images_to_drive()
-time.sleep(25)
-
 query = f"'{folder_id}' in parents and (mimeType='image/jpeg' or mimeType='image/png')"
 results = drive_service.files().list(
     q=query,
@@ -47,7 +40,7 @@ results = drive_service.files().list(
 items = results.get('files', [])
 item = items[index_common]
 
-time.sleep(5)
+time.sleep(3)
 print(items)
 
 fmt_전주점 = CellFormat(
@@ -78,7 +71,7 @@ fmt_기타 = CellFormat(
 with open("python_kota/1.txt", "r", encoding="UTF-8") as f:
     text = f.read().replace("\n", " ") # 67, 68번 문장 지우기
     ### 쿄타 삼촌에게 요청할 부분
-    pattern = r'--------------- 2024년 11월 4일 월요일 ---------------(.*?)--------------- 2024년 11월 11일 월요일 --------------- ' # 날짜 변경
+    pattern = r'--------------- 2024년 11월 4일 월요일 ---------------(.*?)--------------- 2024년 11월 13일 수요일 --------------- ' # 날짜 변경
     text = re.sub(pattern,"",text)
     pattern = r'(\.+날)'
     text = re.sub(pattern,". 날",text)
